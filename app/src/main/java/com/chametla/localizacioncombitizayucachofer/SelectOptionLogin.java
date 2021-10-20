@@ -1,4 +1,4 @@
-package com.chametla.localizacioncombitizayuca;
+package com.chametla.localizacioncombitizayucachofer;
 
 import android.content.Intent;
 import android.os.Bundle;

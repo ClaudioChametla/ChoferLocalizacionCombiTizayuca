@@ -1,4 +1,4 @@
-package com.chametla.localizacioncombitizayuca;
+package com.chametla.localizacioncombitizayucachofer;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -89,7 +89,7 @@ public class UserRegister extends AppCompatActivity {
 
                     String id = authum.getCurrentUser().getUid();
 
-                    database.child("Users").child(id).setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    database.child("Users").child("Chofer").child(id).setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task2) {
                             if(task2.isSuccessful()){
@@ -110,8 +110,5 @@ public class UserRegister extends AppCompatActivity {
                 }
             }
         });
-
-
-
     }
 }

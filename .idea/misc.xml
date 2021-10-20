@@ -3,12 +3,18 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/clauc/Documents/GeolocalizacionChoferFinalProject/app/src/main/res/layout/activity_user_map.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/clauc/Documents/GeolocalizacionChoferFinalProject/app/src/main/res/layout/toolbar_actionbar.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/clauc/Documents/GeolocalizacionChoferFinalProject/app/src/main/res/menu/option_menu.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/clauc/Documents/GeolocalizacionFinalProject/app/src/main/res/layout/action_bar_toolbar.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/clauc/Documents/GeolocalizacionFinalProject/app/src/main/res/layout/activity_main.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/clauc/Documents/GeolocalizacionFinalProject/app/src/main/res/layout/activity_select_option_login.xml" value="0.18" />
         <entry key="..\:/Users/clauc/Documents/GeolocalizacionFinalProject/app/src/main/res/layout/activity_user_login.xml" value="0.18" />
         <entry key="..\:/Users/clauc/Documents/GeolocalizacionFinalProject/app/src/main/res/layout/activity_user_map.xml" value="0.18" />
         <entry key="..\:/Users/clauc/Documents/GeolocalizacionFinalProject/app/src/main/res/layout/activity_user_register.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/clauc/Documents/GeolocalizacionFinalProject/app/src/main/res/layout/toolbar.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/clauc/Documents/GeolocalizacionFinalProject/app/src/main/res/layout/toolbar_actionbar.xml" value="0.18" />
+        <entry key="..\:/Users/clauc/Documents/GeolocalizacionFinalProject/app/src/main/res/menu/option_menu.xml" value="0.18" />
       </map>
     </option>
   </component>

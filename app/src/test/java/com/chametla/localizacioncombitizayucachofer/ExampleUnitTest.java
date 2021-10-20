@@ -1,4 +1,4 @@
-package com.chametla.localizacioncombitizayuca;
+package com.chametla.localizacioncombitizayucachofer;
 
 import org.junit.Test;
 

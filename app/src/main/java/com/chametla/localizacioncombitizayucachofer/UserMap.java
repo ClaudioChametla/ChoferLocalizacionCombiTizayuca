@@ -1,27 +1,25 @@
-package com.chametla.localizacioncombitizayuca;
+package com.chametla.localizacioncombitizayucachofer;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationManager;
 import android.location.LocationRequest;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
-import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
 
+import com.chametla.localizacioncombitizayucachofer.providers.GeofireProvider;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationResult;
@@ -30,17 +28,24 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.security.AuthProvider;
 
 public class UserMap extends AppCompatActivity implements OnMapReadyCallback {
+
     Button botonCerrar;
     FirebaseAuth mAtuh;
     FirebaseUser mFirebaseUser;
+
+
+    private GeofireProvider mGeofireProvider;
 
     GoogleMap mMap;
     SupportMapFragment mMapFragment;
@@ -50,44 +55,94 @@ public class UserMap extends AppCompatActivity implements OnMapReadyCallback {
     private final static int LOCATION_REQUEST_CODE = 1;
     private final static int SETTINGS_REQUEST_CODE = 2;
 
+    private Marker mMarker;
+
+    private Button mbIniciar;
+    private boolean isConnect = false;
+
+    private LatLng mCurrentLatLng;
+
     //Callback lines
     LocationCallback mLocationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             for (Location location : locationResult.getLocations()) {
                 if (getApplicationContext() != null) {
+                    //Guardar ubicacion en Firebase
+                    mCurrentLatLng = new LatLng(location.getLatitude(),location.getLongitude());
+
                     //Obtener locación en tiempo real
+                    if(mMarker != null){
+                        mMarker.remove();
+                    }
+                    mMarker = mMap.addMarker(new MarkerOptions().position(
+                            new LatLng(location.getLatitude(), location.getLongitude())
+                    )
+                            .title("Tu Ubicación")
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.combimark))
+
+                    );
                     mMap.moveCamera(CameraUpdateFactory.newCameraPosition(
                             new CameraPosition.Builder()
                                     .target(new LatLng(location.getLatitude(), location.getLongitude()))
-                                    .zoom(15f)
+                                    .zoom(17f)
                                     .build()
                     ));
+
+                    updateLocation();
                 }
             }
         }
     };
     //Callback lines ends
-
+///////////////////////////////////ON CREATE/////////////////////////////////////////
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_map);
 
+        //Instancias GeofireProvider
+        mGeofireProvider = new GeofireProvider();
+
         mMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mMapFragment.getMapAsync(this::onMapReady);
 
+        //Toolbar Instancia
+        /*
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        */
+
+        //Instancia boton Iniciar
+        mbIniciar = findViewById(R.id.bIniciar);
+        mbIniciar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(isConnect){
+                    disconect();
+                }
+                else{
+                    startlocation();
+                }
+            }
+        });
 
         //Instanciar propiedades de Firebase
         mAtuh = FirebaseAuth.getInstance();
         mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
         //Instancias boton cerrar
         botonCerrar = findViewById(R.id.bCerrar);
+
+
+
+
         //Instancia Fused Location
         mFusedLocation = LocationServices.getFusedLocationProviderClient(this);
 
 
-        //Metodo de boton
+        ////////////////////Metodo de boton
+
         botonCerrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -100,9 +155,28 @@ public class UserMap extends AppCompatActivity implements OnMapReadyCallback {
                 startActivity(intent);
             }
         });
-        //Fin metodo boton
+        ///////////////////////Fin metodo boton
     }
 
+    ///////////////////////////////////ON CREATE/////////////////////////////////////////
+
+    ///////////////////////////////////Localizacion en tiempo real/////////////////
+    private void updateLocation(){
+
+        mGeofireProvider.saveLocation(FirebaseAuth.getInstance().getCurrentUser().getUid(),mCurrentLatLng);
+    }
+
+
+    public boolean existSession(){
+        boolean exist = false;
+        if(mAtuh.getCurrentUser() != null){
+            exist= true;
+        }
+        return exist;
+    }
+
+
+    ///////////////////////////////////Localizacion en tiempo real/////////////////
 
     //Metodo OnMap sobreescrito
     @Override
@@ -113,7 +187,7 @@ public class UserMap extends AppCompatActivity implements OnMapReadyCallback {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        mMap.setMyLocationEnabled(true);
+
 
 
         mLocationRequest = new com.google.android.gms.location.LocationRequest();
@@ -125,7 +199,32 @@ public class UserMap extends AppCompatActivity implements OnMapReadyCallback {
         startlocation();
 
     }
-    //Fin metodo OnMap
+    //Fin metodo OnMap READY
+
+
+    ///////////////////////////Cerrar Sesión
+    /*
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.option_menu,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.action_logout){
+            cerrarSesion();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    private void cerrarSesion() {
+        mAtuh.signOut(); // Cierra sesión en Firebase
+        Intent intent = new Intent(UserMap.this, SelectOptionLogin.class);
+        startActivity(intent);
+    }
+    */
+    ///////////////////////////////Fin Cerrar Sesión
+
 
 
     //Permisos ubicacion
@@ -136,6 +235,7 @@ public class UserMap extends AppCompatActivity implements OnMapReadyCallback {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         mFusedLocation.requestLocationUpdates(mLocationRequest,mLocationCallback, Looper.myLooper());
+                        mMap.setMyLocationEnabled(false);
                     }
                 }
             else {
@@ -187,10 +287,27 @@ public class UserMap extends AppCompatActivity implements OnMapReadyCallback {
     }*/
 //FIn Permisos activos
 
+    private void disconect(){
+
+        if(mFusedLocation != null){
+            mbIniciar.setText("Inicio");
+            isConnect = false;
+            mFusedLocation.removeLocationUpdates(mLocationCallback);
+
+            mGeofireProvider.removeLocation(mAtuh.getUid());
+        }
+    }
+
+
+
+    //Inciciar Ubicacion haciendo uso del Escuchador
     private void startlocation(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED){
+                mbIniciar.setText("Fin");
+                isConnect = true;
                 mFusedLocation.requestLocationUpdates(mLocationRequest,mLocationCallback, Looper.myLooper());
+                mMap.setMyLocationEnabled(false);
             }
             else {
                 checkLocationPermission();
@@ -198,6 +315,7 @@ public class UserMap extends AppCompatActivity implements OnMapReadyCallback {
         }
         else{
                 mFusedLocation.requestLocationUpdates(mLocationRequest,mLocationCallback, Looper.myLooper());
+                mMap.setMyLocationEnabled(false);
         }
 
     }

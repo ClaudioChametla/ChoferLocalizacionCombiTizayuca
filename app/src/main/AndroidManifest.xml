@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.chametla.localizacioncombitizayuca">
+    package="com.chametla.localizacioncombitizayucachofer">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -14,19 +14,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LocalizacionCombiTizayuca">
         <activity
-            android:name=".UserMap"
+            android:name="com.chametla.localizacioncombitizayucachofer.UserMap"
             android:exported="true" />
         <activity
-            android:name=".UserLogin"
+            android:name="com.chametla.localizacioncombitizayucachofer.UserLogin"
             android:exported="true" />
         <activity
-            android:name=".UserRegister"
+            android:name="com.chametla.localizacioncombitizayucachofer.UserRegister"
             android:exported="true" />
         <activity
-            android:name=".SelectOptionLogin"
+            android:name="com.chametla.localizacioncombitizayucachofer.SelectOptionLogin"
             android:exported="true" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.chametla.localizacioncombitizayucachofer.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
